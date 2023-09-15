@@ -26,7 +26,7 @@ function App() {
     <div className="App" style={{backgroundColor: selectedTheme.backgroundColor, color: selectedTheme.textColor}}>
       <NavBar theme={selectedTheme}/>
       <Routes>
-        <Route path='/dashboard' element={<DashBoard theme={selectedTheme}/>}/>
+        <Route path='/TSI.NETpruebas' element={<DashBoard theme={selectedTheme}/>}/>
         <Route path='/ejemplo' element={""}/>
         <Route path='/ejemplo2' element={""}/>
       </Routes>
