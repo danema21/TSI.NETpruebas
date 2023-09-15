@@ -1,0 +1,23 @@
+.navbar-my-app {
+    box-shadow: -2px 1px 4px -1px black !important;
+}
+
+
+.nav-image {
+    width: 40px;
+}
+
+.nav-link {
+    font-size: larger;
+    margin-left: 40px;
+    margin-top: 10px;
+    text-decoration: none;
+}
+
+.selected-page {
+    font-size: larger;
+    margin-left: 40px;
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 20px;
+}
