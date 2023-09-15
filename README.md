@@ -68,3 +68,16 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Las dependencias que se usaron para este proyecto son:
+
+- react-router
+- react-bootstrap bootstrap
+- axios
+- gh-pages
+
+## En index.js se importaron las siguientes librerias
+
+- import {BrowserRouter} from 'react-router-dom';
+- import 'bootstrap/dist/css/bootstrap.min.css';
+- import 'font-awesome/css/font-awesome.min.css';
