@@ -6,6 +6,7 @@ import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 
 // Your web app's Firebase configuration
@@ -22,6 +23,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const firestoreDB = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+const provider = new GoogleAuthProvider();
 
 const defaultTheme = {
   primaryColor: '#7a67f1',
@@ -46,7 +49,7 @@ function App() {
     <div className="App" style={{backgroundColor: selectedTheme.backgroundColor, color: selectedTheme.textColor}}>
       <NavBar theme={selectedTheme}/>
       <Routes>
-        <Route path='/TSI.NETpruebas' element={<DashBoard theme={selectedTheme} db={firestoreDB}/>}/>
+        <Route path='/TSI.NETpruebas' element={<DashBoard theme={selectedTheme} db={firestoreDB} auth={auth} provider={provider}/>}/>
         <Route path='/ejemplo' element={""}/>
         <Route path='/ejemplo2' element={""}/>
       </Routes>
