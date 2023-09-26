@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Container, Button, Form, FormControl, Row, Col, Image } from "react-bootstrap";
+import { Container, Button, Form, FormControl, Row, Col, Image, Spinner } from "react-bootstrap";
 import { collection, addDoc, onSnapshot, serverTimestamp, orderBy, query, limit } from "firebase/firestore"; 
 import { signInWithPopup } from "firebase/auth";
 import GoogleButton from "react-google-button";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const Post = (props) => {
     return(
@@ -29,6 +30,7 @@ const Post = (props) => {
                 <Col xs={8} style={{border: "1px solid rgba(0,0,0,0.2)", borderRadius: "3px"}}>
                     <Row xs={8}>
                         <p>{props.post.message}</p>
+                        {props.post.image !== "" ? <Image src={props.post.image} fluid style={{minWidth: "200px"}}/> : null}
                     </Row>
                 </Col>
             </Row>
@@ -39,7 +41,9 @@ const Post = (props) => {
 const DashBoard = (props) => {
     const [loggedIn, setLoggedIn] = useState(null);
     const [msg, setMsg] = useState("");
+    const [img, setImg] = useState(null);
     const [posts, setPosts] = useState([]);
+    const [percent, setPercent] = useState(0);
 
     useEffect(() => { 
         const q = query(
@@ -69,15 +73,56 @@ const DashBoard = (props) => {
             alert("ingrese un mensaje valido");
             return;
         }
-        await addDoc(collection(props.db, "Messages"), {
-            message: msg,
-            date: new Date().toLocaleDateString("en-GB"),
-            timestamp: serverTimestamp(),
-            userName: loggedIn.displayName,
-            email: loggedIn.email,
-            profilePic: loggedIn.photoURL
-        }).then(res => console.log("msg agregado con exito con id: " + res.id)).catch(e => console.log(e));
+
+        try{
+            if(img != null){
+                const storageRef = ref(props.storage, `images/${img.name}`);
+                const uploadTask = uploadBytesResumable(storageRef, img);
+ 
+                uploadTask.on(
+                    "state_changed",
+                    (snapshot) => {
+                        const percent = Math.round(
+                            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                        );
+                        // update progress
+                        console.log("subiendo imagen:" + percent +"%");
+                        setPercent(percent);
+                    },
+                    (err) => console.log(err),
+                    () => {
+                        // download url
+                        getDownloadURL(uploadTask.snapshot.ref).then(async (url) => {
+                            console.log(url);
+                            await addDoc(collection(props.db, "Messages"), {
+                                message: msg,
+                                image: url,
+                                date: new Date().toLocaleDateString("en-GB"),
+                                timestamp: serverTimestamp(),
+                                userName: loggedIn.displayName,
+                                email: loggedIn.email,
+                                profilePic: loggedIn.photoURL
+                            }).then(res => console.log("mensaje agregado con exito con id: " + res.id)).catch(e => console.log("Error al enviar mensaje:", e));
+                        });
+                    }
+                );
+            }else{
+                await addDoc(collection(props.db, "Messages"), {
+                    message: msg,
+                    image: "",
+                    date: new Date().toLocaleDateString("en-GB"),
+                    timestamp: serverTimestamp(),
+                    userName: loggedIn.displayName,
+                    email: loggedIn.email,
+                    profilePic: loggedIn.photoURL
+                }).then(res => console.log("mensaje agregado con exito con id: " + res.id)).catch(e => console.log("Error al enviar mensaje:", e));
+            }
+
+        }catch(e){console.log("Error al enviar la imagen:", e)}
+
         setMsg("");
+        setImg(null);
+        setPercent(0);
     }
 
     const logIn = () => {
@@ -93,6 +138,10 @@ const DashBoard = (props) => {
         window.location.reload();
     }
 
+    const handleImageClick = () => {
+        document.getElementById("file-input").click();
+    }
+
     return(
         <>
             {loggedIn ?
@@ -100,10 +149,14 @@ const DashBoard = (props) => {
                 <Button onClick={logout} variant="outline" className="mt-4" style={{backgroundColor: props.theme.secondaryColor, borderRadius: "4px", fontWeight: "bolder", margin: "0 auto", display: "block"}}>LOG OUT</Button>
                 <h1 className="text-center mt-3">CHAT</h1>
                 <p className="text-center">Bienvenido/a {loggedIn.displayName}</p>
-                <Form block style={{display: "flex"}} onSubmit={e => sendMessage(e)}>
-                    <FormControl onChange={(e) => setMsg(e.target.value)} type="text" placeholder="Escribir mensaje..." className="mr-sm-2 mt-2" value={msg}/>
+                <Form block style={{display: "flex", width: "80%", margin:"0 auto"}} onSubmit={e => sendMessage(e)}>
+                    <FormControl onChange={(e) => setMsg(e.target.value)} type="text" placeholder="Escribir mensaje..." className="mr-sm-2 mt-2 me-2" value={msg}/>
                     <Button type="submit" variant="outline" style={{backgroundColor: props.theme.secondaryColor, borderRadius: "20%"}} className='mt-2 me-2'>
                         <i className='fa fa-send' style={{fontSize: 'larger', fontWeight: 'bolder'}}></i>
+                    </Button>
+                    <input id="file-input" type="file" accept="image/*" onChange={e => setImg(e.target.files[0])} style={{display: "none", position: "absolute"}}/>
+                    <Button onClick={handleImageClick} variant={img == null ? "outline" : "outline-light"} style={{backgroundColor: props.theme.secondaryColor, borderRadius: "20%"}} className='mt-2'>
+                        <i className='fa fa-photo' style={{fontSize: 'larger', fontWeight: 'bolder'}}></i>
                     </Button>
                 </Form>
 
