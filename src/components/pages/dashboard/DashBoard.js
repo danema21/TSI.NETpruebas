@@ -30,7 +30,7 @@ const Post = (props) => {
                 <Col xs={8} style={{border: "1px solid rgba(0,0,0,0.2)", borderRadius: "3px"}}>
                     <Row xs={8}>
                         <p>{props.post.message}</p>
-                        {props.post.image !== "" ? <Image src={props.post.image} fluid style={{minWidth: "200px"}}/> : null}
+                        {props.post.image !== "" ? <Image src={props.post.image} fluid style={{minWidth: "100px"}}/> : null}
                     </Row>
                 </Col>
             </Row>
