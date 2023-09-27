@@ -5,7 +5,7 @@ const Cabezal = (props) => {
     return(
         <div style={{background: props.theme.primaryColor, color: "#f1f1f1"}}>
            <Container fluid style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '8vh'}}>
-                <h2><b>Microb UY</b></h2>
+                <h2><b>Microb UY</b> 1.0.0</h2>
                 <div style={{display: "flex", alignItems: 'center'}}>
                     <i className="fa fa-user me-3" style={{fontSize:'30px'}}></i>
                     <h3 className="me-4">Admin</h3>
