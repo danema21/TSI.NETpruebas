@@ -8,6 +8,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getStorage } from "firebase/storage";
+import Usuarios from './components/pages/usuarios/Usuarios';
 
 
 // Your web app's Firebase configuration
@@ -52,8 +53,7 @@ function App() {
       <NavBar theme={selectedTheme}/>
       <Routes>
         <Route path='/TSI.NETpruebas' element={<DashBoard theme={selectedTheme} db={firestoreDB} auth={auth} provider={provider} storage={storage}/>}/>
-        <Route path='/ejemplo' element={""}/>
-        <Route path='/ejemplo2' element={""}/>
+        <Route path='/usuarios' element={<Usuarios theme={selectedTheme}/>}/>
       </Routes>
     </div>
   );

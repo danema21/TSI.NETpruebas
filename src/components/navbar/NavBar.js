@@ -19,8 +19,7 @@ const NavBar = (props) => {
                         <Nav className="me-auto">
                             <Buscador theme={props.theme}/>
                             <Link style={{color: props.theme.textColor}} to={"./TSI.NETpruebas"} className={active === 1 ? "nav-link active selected-page" : "nav-link"} onClick={() => setActive(1)}>HOME</Link>
-                            <Link style={{color: props.theme.textColor}} to={"./ejemplo"} className={active === 2 ? "nav-link active selected-page" : "nav-link"} onClick={() => setActive(2)}>HASHTAG</Link>
-                            <Link style={{color: props.theme.textColor}} to={"./ejemplo2"} className={active === 3 ? "nav-link active selected-page" : "nav-link"} onClick={() => setActive(3)}>TENDENCIAS</Link>
+                            <Link style={{color: props.theme.textColor}} to={"./usuarios"} className={active === 2 ? "nav-link active selected-page" : "nav-link"} onClick={() => setActive(2)}>USUARIOS</Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
