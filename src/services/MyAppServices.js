@@ -1,7 +1,7 @@
 import http from "../http-common";
 
-const getAllUsuarios = () => {
-    return http.get(`/usuario`);
+const getAllUsuarios = (page, size) => {
+    return http.get(`/usuario?paginaActual=${page}&elementosPorPagina=${size}`);
 }
 
 const getUsuario = (id) => {
@@ -20,12 +20,17 @@ const borrarUsuario = (id) => {
     return http.delete(`/usuario/${id}`);
 }
 
+const buscarUsuario = (email) => {
+    return http.get(`usuario/buscar/${email}`);
+}
+
 const MyAppServices = {
     getAllUsuarios,
     getUsuario,
     crearUsuario,
     editarUsuario,
-    borrarUsuario
+    borrarUsuario,
+    buscarUsuario
 }
 
 export default MyAppServices;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MyAppServices from "../../../services/MyAppServices";
-import { Button, Card, Container, Form } from "react-bootstrap";
+import { Button, Card, Container, Form, FormControl} from "react-bootstrap";
 
 const Usuarios = (props) => {
     const [usuarios, setUsuarios] = useState([]);
@@ -18,13 +18,16 @@ const Usuarios = (props) => {
     const [fechaNacimiento, setFechaNacimiento] = useState(null);
     const [modo, setModo] = useState("CREAR");
     const [estado, setEstado] = useState("");
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(2);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
-        MyAppServices.getAllUsuarios().then(response => {
+        MyAppServices.getAllUsuarios(page, pageSize).then(response => {
             console.log(response.data);
             setUsuarios(response.data);
         }).catch(e => console.log("error al conseguir los usuarios", e));
-    } , []);
+    } , [page, pageSize]);
 
     const handleEditar = (usuario) => {
         setId(usuario.id);
@@ -101,8 +104,23 @@ const Usuarios = (props) => {
 
     }
 
+    const handleSearchUser = () => {
+        MyAppServices.buscarUsuario(search).then(response => {
+            console.log(response.data);
+            setUsuarios(response.data);
+        }).catch(e => console.log("error al buscar", e));
+    }
+
+    const handleNextPage = () => {
+        (usuarios.length !== 0) ? setPage(page + 1) : console.log("no hay mas registros en la siguiente pagina");
+    }
+
+    const handlePrevPage = () => {
+        (page > 1) ? setPage(page - 1) : console.log("no se puede retroceder mas");
+    }
+
     return(
-        <Container>
+        <Container fluid>
             <h2 className="text-center">---{estado}---</h2>
             <Card className="mt-4 mb-4">
                 <Card.Header>
@@ -110,30 +128,35 @@ const Usuarios = (props) => {
                 </Card.Header>
                 
                 <Form action={handleConfirmar}>
-                <Card.Body>
-                        <Form.Control type="text" placeholder="nickname..." onChange={(e) => setNickname(e.target.value)} value={nickname} required/>    
-                        <Form.Control type="text" placeholder="nombre..." onChange={(e) => setNombre(e.target.value)} value={nombre} required/>
-                        <Form.Control type="text" placeholder="email..." onChange={(e) => setEmail(e.target.value)} value={email} required/>
-                        {modo === "CREAR" ? <Form.Control type="password" placeholder="password" onChange={(e) => setPassword(e.target.value)} value={password} required/> : null}
-                        <Form.Control type="text" placeholder="ocupacion..." onChange={(e) => setOcupacion(e.target.value)} value={ocupacion}/>
-                        <Form.Control type="text" placeholder="ubicacion..." onChange={(e) => setUbicacion(e.target.value)} value={ubicacion}/>
-                        <Form.Control type="text" placeholder="biografia..." onChange={(e) => setBiografia(e.target.value)} value={biografia}/>
-                        <Form.Select onChange={(e) => setRol(e.target.value)} value={rol} required>
-                            <option value="ADMIN_PLATAFORMA">ADMIN_PLATAFORMA</option>
-                            <option value="ADMIN_INSTANCIA">ADMIN_INSTANCIA</option>
-                            <option value="MODERADOR_INSTANCIA">MODERADOR_INSTANCIA</option>
-                            <option value="USUARIO_INSTANCIA">USUARIO_INSTANCIA</option>
-                        </Form.Select>
-                        <Form.Control type="text" placeholder="fecha de nacimiento(yyyy-MM-ddThh:mi:ss)" onChange={(e) => setFechaNacimiento(e.target.value)} value={fechaNacimiento} required/>
-                
-                </Card.Body>
-                <Card.Footer>
-                    <Button type="submit" variant="success" onClick={handleConfirmar}>CONFIRMAR</Button>
-                    {modo === "EDITAR" ? <Button variant="secondary" onClick={() => {setModo("CREAR"); setId(null)}}>CANCELAR</Button> : null}
-                </Card.Footer>
+                    <Card.Body>
+                            <Form.Control type="text" placeholder="nickname..." onChange={(e) => setNickname(e.target.value)} value={nickname} required/>    
+                            <Form.Control type="text" placeholder="nombre..." onChange={(e) => setNombre(e.target.value)} value={nombre} required/>
+                            <Form.Control type="text" placeholder="email..." onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                            {modo === "CREAR" ? <Form.Control type="password" placeholder="password" onChange={(e) => setPassword(e.target.value)} value={password} required/> : null}
+                            <Form.Control type="text" placeholder="ocupacion..." onChange={(e) => setOcupacion(e.target.value)} value={ocupacion}/>
+                            <Form.Control type="text" placeholder="ubicacion..." onChange={(e) => setUbicacion(e.target.value)} value={ubicacion}/>
+                            <Form.Control type="text" placeholder="biografia..." onChange={(e) => setBiografia(e.target.value)} value={biografia}/>
+                            <Form.Select onChange={(e) => setRol(e.target.value)} value={rol} required>
+                                <option value="ADMIN_PLATAFORMA">ADMIN_PLATAFORMA</option>
+                                <option value="ADMIN_INSTANCIA">ADMIN_INSTANCIA</option>
+                                <option value="MODERADOR_INSTANCIA">MODERADOR_INSTANCIA</option>
+                                <option value="USUARIO_INSTANCIA">USUARIO_INSTANCIA</option>
+                            </Form.Select>
+                            <Form.Control type="text" placeholder="fecha de nacimiento(yyyy-MM-ddThh:mi:ss)" onChange={(e) => setFechaNacimiento(e.target.value)} value={fechaNacimiento} required/>
+                    
+                    </Card.Body>
+                    <Card.Footer>
+                        <Button type="submit" variant="success" onClick={handleConfirmar}>CONFIRMAR</Button>
+                        {modo === "EDITAR" ? <Button variant="secondary" onClick={() => {setModo("CREAR"); setId(null)}}>CANCELAR</Button> : null}
+                    </Card.Footer>
                 </Form>
             </Card>
-
+            <Container className="mb-2">
+                <Form block style={{display: 'flex'}}>
+                    <Button onClick={handleSearchUser} variant="outline" style={{backgroundColor: props.theme.secondaryColor, borderRadius: "40%"}} className='mt-2 me-2'><i className='fa fa-search' style={{fontSize: 'larger', fontWeight: 'bolder'}}></i></Button>
+                    <FormControl onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Buscar..." className="mr-sm-2 mt-2" />
+                </Form>
+            </Container>
             {usuarios.map(usuario => 
                 <Card key={usuario.id} className="mb-4">
                     <Card.Header>
@@ -154,6 +177,10 @@ const Usuarios = (props) => {
                     </Card.Footer>
                 </Card>
             )}
+            <Container fluid style={{backgroundColor: props.theme.primaryColor, display: "flex", justifyContent: "space-between"}}>
+                <Button onClick={handlePrevPage} variant="outline">ANTERIOR</Button>
+                <Button onClick={handleNextPage} variant="outline">SIGUIENTE</Button>
+            </Container>
         </Container>
     );
 }
